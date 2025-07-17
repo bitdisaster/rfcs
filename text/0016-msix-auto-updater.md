@@ -14,7 +14,11 @@ MSIX is Microsoft's successor to the APPX and MSI installer formats. Windows pro
 
 ## Motivation
 
-Why should we do this? What use cases does it support? What is the expected outcome?
+The MSIX package format provides a modern approach to application deployment, suitable for both enterprise environments and direct downloads to users. It achieves a 99.96% success rate across millions of installations, as reported by Microsoft (https://learn.microsoft.com/en-us/windows/msix/overview). Key features include network bandwidth and disk space optimization, clean uninstallation, and support for tools like Microsoft Endpoint Configuration Manager, Microsoft Intune, and Deployment Image Servicing and Management (DISM.exe). It also supports MSIX App Attach for virtualized environments, AppInstaller for self-hosted deployment and updates, and PowerShell commands for management.
+
+MSIX enables auto-updating through Windows OS APIs, unlike MSI, which lacks this feature, or Squirrel.Windows, which requires a custom updater to be maintained and distributed. For details on supported features by OS version, see https://learn.microsoft.com/en-us/windows/msix/supported-platforms?view=winrt-26100.
+
+Once implemented, MSIX auto-updating would be availble as an alternative to Squirrel.Windows via the https://www.electronjs.org/docs/latest/api/auto-updater#windows API, providing all the advantages mentioned above.
 
 ## Guide-level explanation
 
