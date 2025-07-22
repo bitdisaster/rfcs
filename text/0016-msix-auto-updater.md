@@ -40,6 +40,7 @@ Windows, macOS, and Linux.
 
 ## Reference-level explanation
 
+<!--
 This is the technical portion of the RFC. Explain the design in sufficient detail that:
 
 - Its interaction with other features is clear.
@@ -49,6 +50,159 @@ This is the technical portion of the RFC. Explain the design in sufficient detai
 
 The section should return to the examples given in the previous section, and explain more fully how
 the detailed proposal makes those examples work.
+-->
+
+<!--
+- lib/browser/api/auto-updater/msix-update-win.ts
+  - use when packaged app is detected
+
+- process changes
+  - deprecate process.winstore
+  - process.windowsPackagedApp
+  - process.microsoftStore
+- getPackageInfo()
+- registerPackage()
+- updatePackage()
+- registerAppRestart()
+
+- use macos squirrel format
+  - same updater backend for mac and windows now
+
+- .appinstaller file support
+  - can follow after initial impl
+  - lib/browser/api/auto-updater/appinstaller-update-win.ts
+  - https://learn.microsoft.com/en-us/windows/msix/app-installer/app-installer-file-overview
+
+- microsoft store updates
+  - lib/browser/api/auto-updater/microsoft-store-update-win.ts
+  - https://learn.microsoft.com/en-us/windows/msix/store-developer-package-update
+-->
+
+### Overview
+
+Electron's [autoUpdater](https://www.electronjs.org/docs/latest/api/auto-updater) module supports macOS and Windows. Electron contains an implementation per-platform where the Windows updater assumes the use of Squirrel.
+
+``` js
+// lib/browser/api/auto-updater.ts
+if (process.platform === 'win32') {
+  module.exports = require('./auto-updater/auto-updater-win');
+} else {
+  module.exports = require('./auto-updater/auto-updater-native');
+}
+```
+
+To introduce MSIX auto updating, Electron will provide a new updater implementation when a Windows packaged app is detected.
+
+### Windows packaged apps
+
+Updating an application deployed with MSIX requires knowing about its packaged app identity. APIs will be needed to gather this information under a `windowsPackagedApp` namespace.
+
+This will allow the packaged app to know its ID for updating and whether its
+distributed as standalone or from the Microsoft Store.
+
+```ts
+/**
+ * Info about an application package.
+ * @see https://learn.microsoft.com/en-us/uwp/api/windows.applicationmodel.package?view=winrt-22621
+ */
+interface WindowsPackagedAppInfo {
+  /**
+   * 'FullName' ID.
+   * e.g. 91750D7E.Slack_4.38.65535.0_arm64__8she8kybcnzg4
+   */
+  id: string;
+  /**
+   * Family name which uniquely identifies the package independent of its version.
+   * e.g. 91750D7E.Slack_8she8kybcnzg4
+   */
+  familyName: string;
+  /**
+   * Whether the package is installed in development mode.
+   */
+  developmentMode: boolean;
+  /**
+   * Kind of signature.
+   * Can be 'developer', 'enterprise', 'none', 'store', or 'system'.
+   * @see https://learn.microsoft.com/en-us/uwp/api/windows.applicationmodel.packagesignaturekind?view=winrt-22621
+   */
+  signatureKind: string;
+  /**
+   * URI to the .appinstaller file associated with the current app.
+   * Only present if the app is installed using this method.
+   */
+  appInstallerUri?: string;
+}
+
+interface WindowsPackagedApp {
+  /**
+   * Get info about the current application package.
+   *
+   * Throws if the current application has no packaged identity.
+   */
+  getPackagedAppInfo(): WindowsPackagedAppInfo;
+}
+```
+
+### Performing updates
+
+Electron apps expect auto updates to be performed with the following procedure:
+1. Request update info from web server.
+2. Download update in the background.
+3. Apply update on next app launch.
+
+To meet these requirements, we'll need to invoke methods on the WinRT PackageManager class.
+
+```ts
+/**
+ * Options to customize the behavior of MSIX updates.
+ * @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.addpackageoptions?view=winrt-22621
+ */
+type UpdatePackageOptions = {
+  /**
+   * Callback with percentage completition over the entire course of the
+   * deployment operation.
+   * @param percentage Installation percentage
+   */
+  onprogress?: (percentage: number) => void;
+};
+
+interface WindowsPackagedApp {
+  /**
+   * Download MSIX package to update to. Defer registering update until app
+   * restarts.
+   * @param packageUri A URL path to an MSIX package.
+   * @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.addpackagebyuriasync?view=winrt-26100
+   */
+  updatePackage(packageUri: string, options?: UpdatePackageOptions): Promise<void>;
+
+  /**
+   * Deploy downloaded package for updating. Terminates the application to
+   * proceed with updates.
+   * @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.registerpackagebyfamilynameasync?view=winrt-26100
+   */
+  deployPackage(): Promise<void>;
+}
+```
+
+### Determining update availability
+
+Electron has historically used Squirrel updater on both Mac and Windows. Although they share the same name, their implementations and [update mechanisms are different.](https://www.electronjs.org/docs/latest/tutorial/updates#update-server-specification)
+
+- Squirrel for Windows: fetches `RELEASES` file
+- Squirrel for Mac: fetches JSON document
+
+With the introduction of a new updater, we should take this opportunity to
+converge these designs. The MSIX updater proposes to use the Mac's JSON update
+file format.
+
+```json
+{
+    "url": "https://your-static.storage/your-app-1.2.3-windows.msix",
+    "name": "1.2.3",
+    "notes": "Update for MSIX packaged app",
+    "pub_date": "2025-07-22T18:59:52.022Z"
+}
+```
 
 ## Drawbacks
 
