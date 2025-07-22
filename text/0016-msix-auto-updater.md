@@ -242,6 +242,7 @@ adaptation from other technologies.
 
 ## Future possibilities
 
+<!--
 Think about what the natural extension and evolution of your proposal would be and how it would
 affect the project as a whole in a holistic way. Try to use this section as a tool to more fully
 consider all possible interactions with the project in your proposal.
@@ -255,3 +256,20 @@ cannot think of anything.
 Note that having something written down in the future possibilities section is not a reason to
 accept the current or a future RFC; such notes should be in the section on motivation or
 rationale in this or subsequent RFCs. The section merely provides additional information.
+-->
+
+### .appinstaller auto-updater
+
+[.appinstaller files](https://learn.microsoft.com/en-us/windows/msix/app-installer/app-installer-file-overview) are another method of deploying MSIX apps. It has its own set of native
+Windows APIs related to update availability and deployment.
+
+`WindowsPackagedAppInfo['appInstallerUri']` can be used to detect its usage. If detected, Electron can
+choose to use an alternate updater implementation.
+
+### Microsoft store auto-updater
+
+Similary, [Microsoft Store APIs](https://learn.microsoft.com/en-us/windows/msix/store-developer-package-update) are available in Windows.
+
+`WindowsPackagedAppInfo['signatureKind'] === 'store'` can be used to detect an
+MSIX app deployed from the Microsoft Store. If detected, an MS store-specific
+updater can be used.
