@@ -245,18 +245,14 @@ Why should we *not* do this?
 
 ## Prior art
 
-Discuss prior art, both the good and the bad, in relation to this proposal. A few examples of what
-this can include are:
+The code for this RFC has already been implemented in [Slack Desktop's MSIX implementation](https://slack.com/downloads/windows).
+This implementation exists in three parts:
+* [bitdisaster/electron-windows-msix](electron-windows-msix) for MSIX installer creation.
+* A custom [Electron Forge](http://electronforge.io/) maker that wraps around the above package.
+* A native Node.js module that handles the auto-update process.
 
-- Does this feature exist in other frameworks and what experience have their community had?
-- Does this feature exist as a userland implementation, and what can be learned from it?
-- Is this related to a change upstream in Chromium or Node.js?
-- Does this proposal help Electron further align with evolving web standards?
-
-This section is intended to encourage you as an author to think about the lessons from prior
-implementations to provide readers of your RFC with a fuller picture. If there is no prior art,
-that is fine - your ideas are interesting to us whether they are brand new or if it is an
-adaptation from other technologies.
+At Slack, we have been deploying MSIX builds to Windows customers for the past year, and have seen it successfully
+replace the use-cases for Squirrel.Windows, WiX MSI, and AppX.
 
 ## Unresolved questions
 
