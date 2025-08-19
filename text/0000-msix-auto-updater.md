@@ -58,7 +58,15 @@ page in the Microsoft developer documentation.
 
 ## Guide-level explanation
 
-TODO
+MSIX installers can already be generated through the [`electron-windows-msix`](https://github.com/bitdisaster/electron-windows-msix) npm package.
+However, they currently do not integrate with Electron's `autoUpdater` module.
+
+This RFC aims to provide a native auto-updating experience for MSIX that is completely
+transparent to the user-facing `autoUpdater` API. Under the hood, Electron will detect
+the type of package being used and call the corresponding system API accordingly.
+
+We propose that the MSIX updater feed follows the Squirrel.Mac format to standardize
+update server responses across platforms.
 
 ## Reference-level explanation
 
