@@ -181,7 +181,7 @@ Electron apps expect auto updates to be performed with the following procedure:
 2. Download update in the background.
 3. Apply update on next app launch.
 
-To meet these requirements, we'll need to invoke methods on the WinRT PackageManager class.
+To meet these requirements, we'll need to invoke methods on the [WinRT PackageManager class.](https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager?view=winrt-22621)
 
 ```ts
 /**
