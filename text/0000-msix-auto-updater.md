@@ -13,10 +13,11 @@ by Microsoft for Windows. It is designed to replace previous generations of inst
 as AppX, MSI, and ClickOnce.
 
 This RFC proposes adding first-class support for MSIX packages in Electron by supporting its native
-auto-update API. This would involve adding an alternative
-[`autoUpdater`](https://github.com/electron/electron/blob/main/shell/browser/auto_updater.h)
-mechanism to Electron's existing [Squirrel.Windows](https://github.com/Squirrel/Squirrel.Windows)
-implementation.
+auto-update API with Electron's [`autoUpdater`](https://github.com/electron/electron/blob/main/shell/browser/auto_updater.h) module.
+
+This change would reroute `autoUpdater` requests away from MSIX packaged apps from Electron's existing
+[Squirrel.Windows](https://github.com/Squirrel/Squirrel.Windows) implementation into a new code path
+calling the MSIX update APIs.
 
 ## Motivation
 
@@ -65,7 +66,7 @@ This RFC aims to provide a native auto-updating experience for MSIX that is comp
 transparent to the user-facing `autoUpdater` API. Under the hood, Electron will detect
 the type of package being used and call the corresponding system API accordingly.
 
-We propose that the MSIX updater feed follows the Squirrel.Mac format to standardize
+We propose that the MSIX updater feed follows the Squirrel.Mac JSON format to standardize
 update server responses across platforms.
 
 ## Reference-level explanation
@@ -121,7 +122,12 @@ if (process.platform === "win32") {
 }
 ```
 
-To introduce MSIX auto updating, Electron will provide a new updater implementation when a Windows packaged app is detected.
+To introduce MSIX auto updating, Electron will provide a new updater implementation when a **Windows packaged app** is detected.
+
+> [!IMPORTANT]
+> This RFC refers to "Windows packaged apps" in the sense of Windows apps that have a Package Identity, rather than "packaged" in
+> the Electron sense. See the Microsoft's [Deployment Overview](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/)
+> documentation for more information.
 
 ### Windows packaged apps
 
