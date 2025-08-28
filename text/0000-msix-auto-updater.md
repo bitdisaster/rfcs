@@ -274,11 +274,32 @@ replace the use-cases for Squirrel.Windows, WiX MSI, and AppX. The auto-updater 
 
 ## Unresolved questions
 
-- What parts of the design do you expect to resolve through the RFC process before this gets merged?
+With auto-updating implemented, MSIX makes a compelling case to replace all other installers. It covers use cases like machine-wide deployment currently done by MSI's, store deployment covered by AppX and auto-update capability currently provided by Windows.Squirrel. Unfortunately there is no generalized migration strategy that could be implemented as part of the auto-updating process. Apps would have to implement migration code tailored to their app. The general steps woudld be:
+* install MSIX in parallel
+* on app exit, call Squirrel uninstaller
+* cleanup of potential artifacts like shortcuts and pinned items
+* launch MSIX
+
+However, each app might have nuances that go beyond these general steps.
+Regarding user data, there are good news. If user data are stored in %APPDATA% then the MSIX will pick up existing data even if virtualization is not disabled. If a data need to be accessed in other locations then consider exempting those locations using [virtualization modifications](https://learn.microsoft.com/en-us/windows/msix/desktop/flexible-virtualization).
+
+MSIX, with its auto-updating capabilities, presents a compelling alternative to traditional installers. It supports machine-wide deployments (previously handled by MSI), store deployments (same as AppX), and auto-updates (currently managed by Squirrel.Windows). However, there is no universal migration strategy for incorporating auto-updates, as apps require custom migration code tailored to their specific needs. The general migration steps include:
+
+- Installing MSIX in parallel.
+- Calling the Squirrel uninstaller upon app exit.
+- Cleaning up artifacts such as shortcuts and pinned items.
+- Launching the MSIX package.
+
+However, individual apps may have unique requirements that extend beyond these steps.
+
+Regarding user data, MSIX seamlessly handles data stored in `%APPDATA%`, accessing it without disabling virtualization. For data stored in other locations, consider applying [virtualization modifications](https://learn.microsoft.com/en-us/windows/msix/desktop/flexible-virtualization) to exempt those locations.
+
+
+<!-- - What parts of the design do you expect to resolve through the RFC process before this gets merged?
 - What parts of the design do you expect to resolve through the implementation of this feature
   before stabilization?
 - What related issues do you consider out of scope for this RFC that could be addressed in the
-  future independently of the solution that comes out of this RFC?
+  future independently of the solution that comes out of this RFC? -->
 
 ## Future possibilities
 
