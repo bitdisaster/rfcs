@@ -267,8 +267,8 @@ This implementation exists in three parts:
 * A custom [Electron Forge](http://electronforge.io/) maker that wraps around the above package.
 * A native Node.js module that handles the auto-update process.
 
-At Slack, we have been deploying MSIX builds to Windows customers for the past year, and have seen it successfully
-replace the use-cases for Squirrel.Windows, WiX MSI, and AppX.
+At Slack, we have been deploying MSIX builds to Windows customers for the past year with over 1.4 million installations, and have seen it successfully
+replace the use-cases for Squirrel.Windows, WiX MSI, and AppX. The auto-updater delivers consistent update success rate of over 99%, comparable to Squirrel.Windows.
 
 ## Unresolved questions
 
