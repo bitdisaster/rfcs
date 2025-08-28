@@ -248,7 +248,9 @@ file format.
 
 ## Drawbacks
 
-Why should we *not* do this?
+* The MSIX format has some limitation over older formats like MSI. Installation of device drivers for example are not possible. That being said, capabilities have been constantly expanded with each Windows version. See [feature-support](https://learn.microsoft.com/en-us/windows/msix/supported-platforms#msix-feature-support) for details.
+* By default, MSIX packaged apps access to the registry and file systems are virtualized. Therefore it is not possible for an app to communicate changes to other apps via registry/filesystem or to make permanent modifications. If this is not the desired behavior than manifest declarations can be made to poke holes into the virtualization starting with Windows; Build 18362. See [MSIX virtualization](https://learn.microsoft.com/en-us/windows/msix/desktop/flexible-virtualization) for details.
+* Using the MSIX updater capabilities on Windows simplifies maintenance by eliminating the need for a custom auto-updater like Squirrel.Windows. However, this approach means we lose control if issues arise and must rely on Microsoft to deliver timely fixes.
 
 ## Rationale and alternatives
 
