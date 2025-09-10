@@ -254,12 +254,20 @@ file format.
 
 ## Rationale and alternatives
 
-- Why is this design the best in the space of possible designs?
-- What other designs have been considered and what is the rationale for not choosing them?
-- What is the impact of not doing this?
-- If this is an API proposal, could this be done as a JavaScript module or a native Node.js add-on
-  instead? Does the proposed change make Electron code easier or harder to read, understand,
-  and maintain?
+### Why This Design?
+
+* Native Integration: Uses Windows’ PackageManager APIs, eliminating maintenance of custom updaters like Squirrel.Windows and ensuring compatibility with Microsoft’s ecosystem (e.g., Intune, Endpoint Configuration Manager).
+* Unified API: Maintains the existing autoUpdater API, transparently routing MSIX packages to native APIs, simplifying developer experience.
+* Cross-Platform Consistency: Adopts Squirrel.Mac’s JSON update format, aligning Windows and macOS update mechanisms.
+* Proven Reliability: MSIX’s 99.96% install success rate and Slack’s 99% update success rate over 1.4M installations match Squirrel.Windows’ performance without custom maintenance.
+* Future-Proof: MSIX is Microsoft’s modern packaging format, replacing MSI, AppX, and ClickOnce, aligning Electron with Windows’ long-term strategy.
+
+### Alternatives Considered
+
+* Status Quo (No MSIX Auto-Updating): Keep reliance on unmaintained Squirrel.Windows (last release 2020). This also means no auto-update support for MSIX as Squirrel.Windows does not support MSIX updating, risking falling behind as MSIX adoption grows.
+* Node Module for MSIX Updater: Distributing the updater as a native module, as Slack does, fragments the ecosystem, requiring developers to integrate and maintain it separately. Integration into Electron ensures consistency and distributes maintenance burden to the community.
+* Other Auto-Updating Technologies: No other solution offers native OS support for auto-updating. Any alternatives would require a custom implementation similar to Windows.Squirrel, carrying the the same disadvantages.
+
 
 ## Prior art
 
