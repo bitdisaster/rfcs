@@ -71,32 +71,6 @@ update server responses across platforms.
 
 ## Reference-level explanation
 
-<!--
-- lib/browser/api/auto-updater/msix-update-win.ts
-  - use when packaged app is detected
-
-- process changes
-  - deprecate process.winstore
-  - process.windowsPackagedApp
-  - process.microsoftStore
-- getPackageInfo()
-- registerPackage()
-- updatePackage()
-- registerAppRestart()
-
-- use macos squirrel format
-  - same updater backend for mac and windows now
-
-- .appinstaller file support
-  - can follow after initial impl
-  - lib/browser/api/auto-updater/appinstaller-update-win.ts
-  - https://learn.microsoft.com/en-us/windows/msix/app-installer/app-installer-file-overview
-
-- microsoft store updates
-  - lib/browser/api/auto-updater/microsoft-store-update-win.ts
-  - https://learn.microsoft.com/en-us/windows/msix/store-developer-package-update
--->
-
 ### Overview
 
 Electron's [autoUpdater](https://www.electronjs.org/docs/latest/api/auto-updater) module supports macOS and Windows. Electron contains an implementation per-platform where the Windows updater assumes the use of Squirrel.
