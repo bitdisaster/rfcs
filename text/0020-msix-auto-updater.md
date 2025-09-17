@@ -194,8 +194,8 @@ Electron has historically used Squirrel updater on both Mac and Windows. Althoug
 - Squirrel for Mac: fetches JSON document
 
 With the introduction of a new updater, we should take this opportunity to
-converge these designs. The MSIX updater proposes to use the Mac's JSON update
-file format.
+converge these designs. The MSIX updater proposes to use the [Mac's JSON update
+file format.](https://github.com/Squirrel/Squirrel.Mac?tab=readme-ov-file#update-server-json-format)
 
 ```json
 {
